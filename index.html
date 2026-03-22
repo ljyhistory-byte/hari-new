@@ -67,17 +67,16 @@
         /* 다이나믹 조하리 창 스타일 */
         .window-container {
             width: 100%;
-            height: 300px; /* 창의 전체 높이 */
-            background-color: #d63031; /* 십자가 빨간 선 색상 */
+            height: 300px;
+            background-color: #d63031;
             display: grid;
-            /* 기본값은 5:5 비율 */
             grid-template-columns: 50% 50%; 
             grid-template-rows: 50% 50%;
-            gap: 4px; /* 빨간 선의 두께 */
+            gap: 4px;
             border: 2px solid #333;
             margin-top: 20px;
             box-sizing: border-box;
-            transition: all 0.8s ease-in-out; /* 선이 부드럽게 움직이는 애니메이션 효과 */
+            transition: all 0.8s ease-in-out;
         }
         .window-pane {
             background-color: #f0f4f8;
@@ -89,9 +88,8 @@
             text-align: center;
             padding: 5px;
             font-size: 14px;
-            overflow: hidden; /* 영역이 너무 작아지면 글자 숨김 */
+            overflow: hidden;
         }
-        /* 가장 넓은 메인 영역 강조 색상 */
         .active-pane {
             background-color: #ffeaa7; 
             color: #d35400;
@@ -171,19 +169,15 @@
         let activeBoxId = "";
         let description = "";
 
-        // 4분면 로직 (가장 큰 면적을 메인 유형으로 판별)
         if (disclosure >= 6 && feedback >= 6) {
             resultType = "공개적 영역 (개방형)";
             activeBoxId = "pane-open";
             description = "<strong>[특징]</strong> 자신의 생각과 감정을 솔직하게 표현하고, 친구들의 조언이나 의견도 기꺼이 받아들이는 소통의 달인입니다.<br><br><strong>[조언]</strong> 원만한 교우 관계를 형성하기 가장 좋은 유형입니다. 지금처럼 열린 마음으로 소통을 이어나가 보세요!";
         } else if (disclosure >= 6 && feedback <= 5) {
-            // 자기공개는 높고, 피드백 수용은 낮을 때 (맹목적 영역)
-            // *참고: 제공해주신 이미지의 축 기준(A,D,B,C)에 맞추어 설명 매칭
             resultType = "맹목적 영역 (주장형)";
             activeBoxId = "pane-blind";
             description = "<strong>[특징]</strong> 자신의 의견이나 감정을 표현하는 데에는 자신감이 넘치지만, 다른 사람의 피드백을 수용하는 데는 다소 방어적일 수 있습니다.<br><br><strong>[조언]</strong> 나의 주장이 강한 만큼, 다른 사람의 관점도 존중하는 태도가 필요합니다. 친구들의 조언에 조금 더 귀를 열어보면 어떨까요?";
         } else if (disclosure <= 5 && feedback >= 6) {
-            // 피드백 수용은 높고, 자기공개는 낮을 때 (숨겨진 영역)
             resultType = "숨겨진 영역 (신중형)";
             activeBoxId = "pane-hidden";
             description = "<strong>[특징]</strong> 친구들의 이야기는 귀 기울여 잘 듣지만, 정작 자신의 진짜 마음이나 생각은 겉으로 잘 표현하지 않는 편입니다.<br><br><strong>[조언]</strong> 남을 배려하는 것도 좋지만, 때로는 자신이 원하는 것과 감정을 조금 더 솔직하게 친구들에게 표현해 보세요!";
@@ -197,32 +191,28 @@
         document.getElementById('survey-section').style.display = 'none';
         document.getElementById('result-section').style.display = 'block';
 
-        // 1. 결과 텍스트 업데이트
+        // 텍스트 업데이트
         document.getElementById('result-text').innerHTML = 
             `<strong>${name}</strong> 학생의 가장 넓은 창은<br><strong style="color:#d35400;">[${resultType}]</strong> 입니다.`;
         document.getElementById('result-description').innerHTML = description;
 
-        // 2. ★ 핵심 기능: 점수에 따라 십자가 빨간 선 이동 (비율 조정) ★
-        // 피드백 점수(X축)가 왼쪽 영역의 가로 비율을 결정 (10점 만점 -> 10을 곱해 %로 변환)
+        // 비율 조정
         const leftWidthPercent = feedback * 10; 
         const rightWidthPercent = 100 - leftWidthPercent;
         
-        // 자기공개 점수(Y축)가 위쪽 영역의 세로 비율을 결정
         const topHeightPercent = disclosure * 10;
         const bottomHeightPercent = 100 - topHeightPercent;
 
-        // 아주 약간의 지연(10ms)을 주어 화면에 그려진 후 애니메이션이 작동하게 함
         setTimeout(() => {
             const windowContainer = document.getElementById('johari-window');
             windowContainer.style.gridTemplateColumns = `${leftWidthPercent}% ${rightWidthPercent}%`;
             windowContainer.style.gridTemplateRows = `${topHeightPercent}% ${bottomHeightPercent}%`;
             
-            // 가장 넓은 창 하이라이트
             document.querySelectorAll('.window-pane').forEach(el => el.classList.remove('active-pane'));
             document.getElementById(activeBoxId).classList.add('active-pane');
         }, 10);
 
-// 구글 시트 전송 코드
+        // 구글 시트 전송 코드
         const scriptURL = 'https://script.google.com/macros/s/AKfycbwnWA0eSXsNf8JEHUBsrI4L7FsxBl1GfXp_pQP9m_i8WPwaB3A--hTrRCfwe-455Nbs/exec'; 
         
         const formData = new FormData();
@@ -231,6 +221,12 @@
         formData.append('feedback', feedback);
         formData.append('result', resultType);
         
-        fetch(scriptURL, { method: 'POST', body: formData })
+        // mode: 'no-cors' 포함 및 괄호 오류 수정 완료
+        fetch(scriptURL, { method: 'POST', body: formData, mode: 'no-cors' })
             .then(response => console.log('구글 시트로 전송 완료!'))
             .catch(error => console.error('에러 발생:', error));
+    }
+</script>
+
+</body>
+</html>
